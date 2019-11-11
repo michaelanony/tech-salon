@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  namespace: lab
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      os: ubuntu
+      app: salon
+  template:
+    metadata:
+      name: tech-salon
+      namespace: lab
+      labels:
+        os: ubuntu
+        app: salon
+    spec:
+      initContainers:
+        - name: nginx-init
+          image: busybox
+          command:  
+            - /bin/bash
+            - "-c"
+            - |
+              echo he >> /etc/nginx/conf.d/test
+            - |
+              echo hello
+      containers:
+      - name: tech-salon
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: web
+      restartPolicy: Always

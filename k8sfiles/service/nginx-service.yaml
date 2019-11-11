@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx
+  name: nginx-test
+  namespace: lab
+spec:
+  ports:
+  - targetPort: 80
+    protocol: TCP
+    port: 12345
+  selector:
+    os: ubuntu
+    app: salon

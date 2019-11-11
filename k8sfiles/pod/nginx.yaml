@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tech-salon
+  namespace: lab
+  labels:
+    os: ubuntu
+    app: salon
+spec:
+  containers:
+  - name: tech-salon
+    image: nginx
+    imagePullPolicy: IfNotPresent
+    
+  restartPolicy: Always

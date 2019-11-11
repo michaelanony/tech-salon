@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-ubuntu-tool
+  namespace: lab
+  labels:
+    os: ubuntu
+    app: salon
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      os: ubuntu
+      app: salon 
+  template:
+    metadata:
+      name: ubuntu-tool
+      namespace: lab
+      labels:
+        os: ubuntu
+        app: salon 
+    spec:
+      containers:
+      - image: ubuntu
+        name: ubuntu-os
+        imagePullPolicy: IfNotPresent
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "while true;do echo hello;sleep 1;done"
+      restartPolicy: Always

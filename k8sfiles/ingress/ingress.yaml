@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: lab
+spec:
+  rules:
+  - host: nginx.com
+    http:
+      paths:
+      - backend:
+          serviceName: nginx-test
+          servicePort: 12345
+        path: /

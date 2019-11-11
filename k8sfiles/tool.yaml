@@ -1,0 +1,30 @@
+# ------------------- Mysql Deploment ------------------- #
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu-tool
+  namespace: lab
+  labels:
+    app: tool
+    os: ubuntu
+spec:
+  selector:
+    matchLabels:
+      app: tool
+      os: ubuntu
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: tool
+        os: ubuntu
+    spec:
+      containers:
+      - image: 192.168.11.4:5000/ubuntu-tool
+        name: ubuntu-tool
+        command:
+          - "/bin/bash"
+          - "-c"
+          - "while true;do echo hello;sleep 1;done"
+      restartPolicy: Always
