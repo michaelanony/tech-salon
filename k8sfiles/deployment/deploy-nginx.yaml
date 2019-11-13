@@ -4,9 +4,9 @@ metadata:
   name: nginx-deploy
   namespace: lab
   labels:
-    app: nginx
+     app: ubuntu
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       os: ubuntu
@@ -22,18 +22,59 @@ spec:
       initContainers:
         - name: nginx-init
           image: busybox
-          command:  
-            - /bin/bash
-            - "-c"
-            - |
-              echo he >> /etc/nginx/conf.d/test
-            - |
-              echo hello
+          command: 
+          - "/bin/sh"
+          - "-c"
+          - |
+            cat > /etc/nginx-config/test.conf <<EOF
+            server{
+            listen 80;
+            server_name _;
+            root /www/;
+            }
+            EOF
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx-config
       containers:
+      - image: ubuntu
+        name: ubuntu-os
+        imagePullPolicy: IfNotPresent
+        command:
+        - "/bin/bash"
+        - "-c"
+        - |
+          rm /etc/apt/sources.list
+          cat > /etc/apt/sources.list <<EOF
+          deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+          deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+          deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+          deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+          deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+          deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+          deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+          deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+          deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+          deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+          EOF
+          while true;do echo hello;sleep 1;done
       - name: tech-salon
         image: nginx
         imagePullPolicy: IfNotPresent
+        command: 
+        - "/bin/sh"
+        - "-c"
+        - |
+          cp /etc/nginx-config/test.conf /etc/nginx/conf.d/
+          nginx
         ports:
         - containerPort: 80
+          protocol: TCP
           name: web
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx-config
+      volumes:
+        - name: nginx-config
+          emptyDir: {}
       restartPolicy: Always
